@@ -1,0 +1,23 @@
+# Stage 1 — schema linking / retrieval
+sentence-transformers>=3.0
+faiss-cpu>=1.8
+
+# Stage 2/3 — generation & evidence, model access
+transformers>=4.44
+torch>=2.3
+openai>=1.40          # if using an API model for comparison
+
+# DB + eval
+psycopg2-binary>=2.9
+sqlglot>=25.0          # SQL parsing/normalization for eval
+
+# Backend / demo
+fastapi>=0.112
+uvicorn>=0.30
+streamlit>=1.37
+
+# General
+pandas>=2.2
+numpy>=1.26
+python-dotenv>=1.0
+pytest>=8.0
