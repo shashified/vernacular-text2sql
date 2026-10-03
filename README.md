@@ -78,13 +78,33 @@ Everything else — the plan schema, the validator, the SQL synthesis, the eval
 harness — is real code, not a stub, and doesn't change when you swap the two
 rows above.
 
+## Target languages
+
+**Hindi, Telugu, Hinglish** (plus English as the reference). Telugu has IndicDB's
+largest drop (−11.02%); Hinglish is code-mixed Hindi–English.
+
+## Baseline to beat
+
+IndicDB Table 3, DIN-SQL **with evidence**, Execution Accuracy (%). Our primary
+model is Qwen3-8B (free via Groq), so that row is the one we must improve on.
+
+| Model | English | Hindi | Telugu | Hinglish |
+|---|---|---|---|---|
+| **Qwen3-8B** | **55.05** | **52.65** | **49.98** | **51.06** |
+| Llama 3.3 70B | 66.10 | 57.97 | 57.98 | 65.07 |
+
+Source: arXiv:2604.13686, Table 3. Also reported: schema-linking errors ≈20%
+and aggregation/GROUP BY errors ≈28% of failures; evidence adds +24–27% EX.
+
 ## Team
 
 | Role | Owner |
 |---|---|
-| Schema linking & retrieval lead | — |
-| SQL generation & aggregation lead | — |
-| Evaluation & benchmarking lead | — |
-| Systems / demo lead | — |
+| Schema linking & retrieval lead (Stage 1) | Shashank Tiwari |
+| SQL generation & aggregation lead (Stage 2) | TBD |
+| Evaluation & benchmarking lead (Stage 4) | TBD |
+| Systems / demo lead | TBD |
+| Documentation & report lead (lit survey, review decks, final report, paper) | TBD |
 
-(fill in from the team once roles are assigned)
+Members: Shashank Tiwari, Kyra Panwar, Arush Agrawal, Rhythm Kapoor, Jhanvi.
+Everyone should be able to explain the whole system at reviews, not just their module.
