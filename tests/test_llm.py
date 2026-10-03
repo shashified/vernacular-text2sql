@@ -82,3 +82,10 @@ def test_live_model_answers_demo_question():
     plan = generate_plan(QUESTION_HI, reduced_schema_text(cands), APILLM.from_env())
     result = execution_accuracy(DB_PATH, plan_to_sql(plan), GOLD_SQL)
     assert result["ex"] == 1, (plan, result)
+
+
+def test_env_file_beats_stale_shell_variable(monkeypatch, tmp_path):
+    monkeypatch.setenv("LLM_MODEL", "qwen/qwen3-32b")  # stale value left in the shell
+    f = tmp_path / ".env"
+    f.write_text("LLM_BASE_URL=http://localhost:11434/v1\nLLM_API_KEY=x\nLLM_MODEL=qwen/qwen3.8-27b\n")
+    assert APILLM.from_env(env_file=str(f)).model == "qwen/qwen3.8-27b"

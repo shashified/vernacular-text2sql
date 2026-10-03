@@ -54,7 +54,9 @@ class APILLM(LLM):
         """Build from LLM_BASE_URL / LLM_API_KEY / LLM_MODEL (read from .env if present)."""
         try:
             from dotenv import load_dotenv
-            load_dotenv(env_file or _default_env_path(), override=False)
+            # override=True: the .env file is the single source of truth, so a stale
+            # LLM_MODEL left in the shell (e.g. from `source .env` earlier) can't win.
+            load_dotenv(env_file or _default_env_path(), override=True)
         except ImportError:
             pass  # fall back to whatever is already in the environment
         missing = [k for k in ("LLM_BASE_URL", "LLM_API_KEY", "LLM_MODEL") if not os.getenv(k)]
