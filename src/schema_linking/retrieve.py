@@ -40,3 +40,27 @@ def reduced_schema_text(candidates) -> str:
         ref = el.table if el.column is None else f"{el.table}.{el.column}"
         lines.append(f"- {ref}  ({el.description})  [score={score:.2f}]")
     return "\n".join(lines)
+
+
+def expand_to_tables(candidates, catalog: list[SchemaElement]):
+    """
+    Table-level expansion of the top-k column hits.
+
+    Column-level top-k can drop a column the query needs even when its table was
+    found (e.g. the demo retrieves crops.crop_id but not crops.crop_name, which
+    the GROUP BY needs). So: every table touched by a retrieved element
+    contributes ALL of its columns. Retrieved elements keep their scores and stay
+    first; the added ones get score 0.0. The schema shown to Stage 2 is still
+    reduced -- untouched tables (e.g. mandi_prices) are left out.
+    """
+    tables = []
+    for _, el in candidates:
+        if el.table not in tables:
+            tables.append(el.table)
+    seen = {(el.table, el.column) for _, el in candidates}
+    expanded = list(candidates)
+    for el in catalog:
+        if el.table in tables and (el.table, el.column) not in seen:
+            expanded.append((0.0, el))
+            seen.add((el.table, el.column))
+    return expanded

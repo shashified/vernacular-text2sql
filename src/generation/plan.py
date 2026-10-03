@@ -7,8 +7,7 @@ before SQL synthesis proceeds -- so a required GROUP BY cannot be silently
 dropped, which IndicDB identifies as ~28% of all failures.
 """
 from __future__ import annotations
-import json
-from .llm import LLM
+from .llm import LLM, extract_json
 
 PLAN_PROMPT_TEMPLATE = """You are a careful SQL planner. Given a question and a reduced set of
 candidate schema elements, output ONLY a JSON object with this exact shape:
@@ -21,6 +20,12 @@ candidate schema elements, output ONLY a JSON object with this exact shape:
   "aggregations": [{{"func": "AVG|SUM|COUNT|MAX|MIN", "column": "table.col", "as": "alias"}}, ...],
   "order_by": [...]
 }}
+
+Rules:
+- Use ONLY the exact table and table.column names listed in the candidates below.
+- tables[0] is the table in FROM; every other table must be brought in by a join,
+  where "right" is a column of the table being joined.
+- Output the JSON object only: no explanation, no markdown.
 
 If the question asks for a per-category figure ("for each crop", "by state", "हर फसल के लिए"),
 group_by and aggregations MUST both be non-empty -- do not silently omit them.
@@ -43,7 +48,7 @@ def build_prompt(question: str, schema_text: str) -> str:
 def generate_plan(question: str, schema_text: str, llm: LLM) -> dict:
     prompt = build_prompt(question, schema_text)
     raw = llm.complete(prompt)
-    plan = json.loads(raw)
+    plan = extract_json(raw)
     validate_plan(question, plan)
     return plan
 

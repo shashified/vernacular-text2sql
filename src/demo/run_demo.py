@@ -2,12 +2,14 @@
 End-to-end architecture demo: Stage 1 -> 2 -> 3 -> 4, on a toy agricultural
 database, for a Hindi question. Run with no API key / no network required.
 
-    python -m src.demo.run_demo
+    python -m src.demo.run_demo            # offline, canned model answer (no key)
+    python -m src.demo.run_demo --live     # real model from .env (Groq / Ollama / ...)
+    python -m src.demo.run_demo --live --question "..."   # your own question
 
-Swap OfflineDemoEmbedder -> MultilingualE5Embedder and DemoLLM -> APILLM to
-run this exact same pipeline against real models once you have API access --
-nothing else in this file or in src/ needs to change.
+--live replaces DemoLLM with APILLM.from_env(). Stage 1 still uses the offline
+embedder until MultilingualE5Embedder is wired in (needs Hugging Face access).
 """
+import argparse
 import json
 import sys
 import os
@@ -15,9 +17,9 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
 from src.schema_linking.embedder import OfflineDemoEmbedder
-from src.schema_linking.retrieve import build_catalog, retrieve_candidates, reduced_schema_text
-from src.generation.llm import DemoLLM
-from src.generation.plan import build_prompt, generate_plan
+from src.schema_linking.retrieve import build_catalog, retrieve_candidates, reduced_schema_text, expand_to_tables
+from src.generation.llm import DemoLLM, APILLM
+from src.generation.plan import generate_plan, PlanValidationError
 from src.evidence.generate import generate_evidence
 from src.generation.sql_synth import plan_to_sql
 from src.eval.executor import execution_accuracy
@@ -86,25 +88,43 @@ CANNED_PLAN = json.dumps({
 
 
 def main():
-    print(f"Question (Hindi): {QUESTION_HI}\n")
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--live", action="store_true", help="use the real model configured in .env")
+    ap.add_argument("--question", default=QUESTION_HI, help="question to ask (default: the Hindi demo question)")
+    args = ap.parse_args()
+    question = args.question
+    print(f"Question: {question}\n")
 
     # ---- Stage 1: schema linking ----
     catalog = build_catalog(SCHEMA)
     embedder = OfflineDemoEmbedder()
-    candidates = retrieve_candidates(QUESTION_HI, catalog, embedder, top_k=6)
+    candidates = retrieve_candidates(question, catalog, embedder, top_k=6)
+    candidates = expand_to_tables(candidates, catalog)
     schema_text = reduced_schema_text(candidates)
     print("== Stage 1: retrieved candidate schema elements ==")
     print(schema_text, "\n")
 
     # ---- Stage 3 (evidence, generated from Stage 1's output before Stage 2 uses it) ----
-    evidence = generate_evidence(QUESTION_HI, candidates)
+    evidence = generate_evidence(question, candidates)
     print("== Stage 3: generated evidence ==")
     print(evidence, "\n")
 
     # ---- Stage 2: aggregation-aware structured plan -> SQL ----
-    llm = DemoLLM(canned_responses={QUESTION_HI: CANNED_PLAN})
-    prompt = build_prompt(QUESTION_HI, schema_text)
-    plan = generate_plan(QUESTION_HI, schema_text, llm)
+    if args.live:
+        llm = APILLM.from_env()
+        print(f"(live model: {llm.model})\n")
+    else:
+        llm = DemoLLM(canned_responses={QUESTION_HI: CANNED_PLAN})
+    try:
+        plan = generate_plan(question, schema_text, llm)
+    except PlanValidationError as e:
+        print("== Stage 2: plan REJECTED by the aggregation validator ==")
+        print(e)
+        return
+    except ValueError as e:  # model reply contained no parseable JSON
+        print("== Stage 2: could not parse a plan from the model's reply ==")
+        print(e)
+        return
     print("== Stage 2: validated structured plan ==")
     print(json.dumps(plan, indent=2, ensure_ascii=False), "\n")
 
@@ -113,6 +133,9 @@ def main():
     print(predicted_sql, "\n")
 
     # ---- Stage 4: execution & evaluation ----
+    if question != QUESTION_HI:
+        print("(custom question: no gold SQL, so Stage 4 is skipped)")
+        return
     result = execution_accuracy(DB_PATH, predicted_sql, GOLD_SQL)
     print("== Stage 4: execution accuracy ==")
     print(f"EX = {result['ex']}  ({result['reason']})")

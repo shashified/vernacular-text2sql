@@ -47,14 +47,35 @@ python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
+## Model access (free)
+
+The pipeline talks to any OpenAI-compatible endpoint, configured in a git-ignored
+`.env` file. Everyone uses their **own** key:
+
+```bash
+cp .env.example .env      # then paste your key into .env
+```
+
+- **Groq free tier** (default): sign in at https://console.groq.com, create an API key.
+  Main model: `qwen/qwen3.8-27b`; second model for robustness: `openai/gpt-oss-20b`.
+- **Ollama** (local, no key, no limits): see `.env.example`.
+
+Groq does not serve the exact models IndicDB benchmarked (Qwen3-8B, Llama 3.3 70B),
+so we **reproduce the DIN-SQL(+evidence) baseline ourselves with the same model** we
+use for our method and report ΔEX on that model. IndicDB's Table 3 (below) is the
+reference point, not a like-for-like comparison.
+
 ## Working end-to-end demo (run this first)
 
 A full Stage 1 -> 2 -> 3 -> 4 pipeline runs right now, offline, on a toy
 agricultural SQLite database (`data/toy/agri_toy.db`), for a Hindi question:
 
 ```bash
-python -m src.demo.run_demo
-pytest tests/ -v
+python -m src.demo.run_demo                 # offline, no key needed
+python -m src.demo.run_demo --live          # same pipeline, real model from .env
+python -m src.demo.run_demo --live --question "हर राज्य में कितने किसान हैं?"
+pytest tests/ -v                            # offline tests
+RUN_LIVE_TESTS=1 pytest tests/test_llm.py -k live   # one real-model call
 ```
 
 This proves the *architecture* works:
@@ -70,7 +91,7 @@ This proves the *architecture* works:
 | Component | Right now | Swap in before submitting numbers |
 |---|---|---|
 | Schema-linking embedder | `OfflineDemoEmbedder` — hand-built Hindi/Tamil glossary + trigram overlap, network-free | `MultilingualE5Embedder` (`src/schema_linking/embedder.py`) — real LaBSE/e5 embeddings, needs Hugging Face access (blocked in this sandbox, fine on your own machine/Colab) |
-| Plan-generation LLM | `DemoLLM` — canned correct answer for the one demo question, so the pipeline runs with no API key | `APILLM` (`src/generation/llm.py`) — real Qwen3-8B/Llama 3.3 call via Together AI/Groq/Fireworks (OpenAI-compatible endpoint) |
+| Plan-generation LLM | `DemoLLM` by default (canned answer, no key); **`--live` uses the real model via `APILLM.from_env()`** | Done — wired to Groq through `.env` |
 | Data | 5 farmers, 4 crops, 10 yield records (toy) | IndicDB's real 20 PostgreSQL DBs — see "Getting IndicDB's data and code" above |
 | Evidence (Stage 3) | Heuristic derived from Stage 1's retrieval scores | Study/extend SEED (see literature survey source #8) to be properly language-aware |
 
