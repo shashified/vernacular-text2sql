@@ -18,14 +18,22 @@ class ExecutionResult:
     error: str | None = None
 
 
-def run_sql(db_path: str, sql: str) -> ExecutionResult:
+def run_sql(db_path: str, sql: str, timeout_s: float = 20.0) -> ExecutionResult:
+    """Run a query read-only, aborting it after timeout_s seconds (e.g. a runaway cross join)."""
+    import time
+    deadline = time.monotonic() + timeout_s
+    con = None
     try:
-        con = sqlite3.connect(db_path)
+        con = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True)
+        con.set_progress_handler(lambda: 1 if time.monotonic() > deadline else 0, 100_000)
         rows = con.execute(sql).fetchall()
-        con.close()
         return ExecutionResult(ok=True, rows=rows)
     except Exception as e:
-        return ExecutionResult(ok=False, rows=None, error=str(e))
+        msg = "query timed out" if "interrupted" in str(e).lower() else str(e)
+        return ExecutionResult(ok=False, rows=None, error=msg)
+    finally:
+        if con is not None:
+            con.close()
 
 
 def execution_accuracy(db_path: str, predicted_sql: str, gold_sql: str, order_sensitive: bool = False) -> dict:

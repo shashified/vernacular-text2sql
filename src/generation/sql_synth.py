@@ -24,7 +24,7 @@ def plan_to_sql(plan: dict) -> str:
     where_clauses = []
     for f in plan.get("filters", []):
         v = f["value"]
-        v_sql = f"'{v}'" if isinstance(v, str) else str(v)
+        v_sql = "'" + v.replace("'", "''") + "'" if isinstance(v, str) else str(v)
         where_clauses.append(f"{f['column']} {f['op']} {v_sql}")
 
     sql = f"SELECT {', '.join(select_parts)}\nFROM {from_clause}"
@@ -36,4 +36,6 @@ def plan_to_sql(plan: dict) -> str:
         sql += "\nGROUP BY " + ", ".join(plan["group_by"])
     if plan.get("order_by"):
         sql += "\nORDER BY " + ", ".join(plan["order_by"])
+    if plan.get("limit"):
+        sql += f"\nLIMIT {int(plan['limit'])}"
     return sql + ";"

@@ -51,6 +51,34 @@ GLOSSARY = {
     "मंडी": "market mandi", "कीमत": "price", "भाव": "price",
     "राज्य": "state", "जिला": "district", "गेहूं": "wheat", "चावल": "rice",
     "कपास": "cotton", "गन्ना": "sugarcane",
+    # Hindi: agriculture benchmark vocabulary
+    "धान": "rice", "गेहूं": "wheat", "गन्न": "sugarcane", "मक्का": "maize", "आलू": "potato",
+    "मूंगफली": "groundnut", "काली मिर्च": "black pepper", "दाल": "pulses category",
+    "तिलहन": "oilseeds category", "रेशा": "fibres category", "उत्पादन": "production quantity",
+    "क्षेत्रफल": "cultivated area hectares", "खेती": "cultivated area", "हेक्टेयर": "hectares",
+    "मौसम": "season", "रबी": "Rabi season", "खरीफ": "Kharif season", "जिल": "district",
+    "श्रेणी": "category", "रिकॉर्ड": "production record", "भारत": "India",
+    "पंजाब": "Punjab state", "उत्तर प्रदेश": "Uttar Pradesh state", "हरियाणा": "Haryana state",
+    "महाराष्ट्र": "Maharashtra state", "कर्नाटक": "Karnataka state", "गुजरात": "Gujarat state",
+    "मध्य प्रदेश": "Madhya Pradesh state", "पश्चिम बंगाल": "West Bengal state",
+    "बिहार": "Bihar state", "तेलंगाना": "Telangana state", "केरल": "Kerala state",
+    "ओडिशा": "Odisha state", "तमिलनाडु": "Tamil Nadu state", "आंध्र प्रदेश": "Andhra Pradesh state",
+    "राजस्थान": "Rajasthan state", "डेटाबेस": "database",
+    # Telugu
+    "వరి": "rice", "గోధుమ": "wheat", "చెరకు": "sugarcane", "పత్తి": "cotton", "మొక్కజొన్న": "maize",
+    "బంగాళాదుంప": "potato", "వేరుశనగ": "groundnut", "మిరియాల": "black pepper",
+    "పప్పుధాన్యాల": "pulses category", "నూనెగింజల": "oilseeds category", "నార": "fibres category",
+    "ఉత్పత్తి": "production quantity", "విస్తీర్ణం": "cultivated area hectares", "సాగు": "cultivated",
+    "దిగుబడి": "yield per hectare", "హెక్టార": "hectares", "సీజన్": "season", "రబీ": "Rabi season",
+    "జిల్లా": "district", "రాష్ట్ర": "state", "వర్గ": "category", "పంట": "crop",
+    "సంవత్సర": "year", "రికార్డ": "production record", "సగటు": "average", "మొత్తం": "total",
+    "గరిష్ఠ": "maximum", "భారత": "India", "డేటాబేస్": "database",
+    "పంజాబ్": "Punjab state", "ఉత్తర ప్రదేశ్": "Uttar Pradesh state", "హర్యానా": "Haryana state",
+    "మహారాష్ట్ర": "Maharashtra state", "కర్ణాటక": "Karnataka state", "గుజరాత్": "Gujarat state",
+    "మధ్యప్రదేశ్": "Madhya Pradesh state", "పశ్చిమ బెంగాల్": "West Bengal state",
+    "బీహార్": "Bihar state", "తెలంగాణ": "Telangana state", "కేరళ": "Kerala state",
+    "ఒడిశా": "Odisha state", "తమిళనాడు": "Tamil Nadu state", "ఆంధ్రప్రదేశ్": "Andhra Pradesh state",
+    "రాజస్థాన్": "Rajasthan state",
     # Tamil
     "விவசாயி": "farmer", "பயிர்": "crop", "விளைச்சல்": "yield production quantity",
     "சராசரி": "average mean", "ஆண்டு": "year", "சந்தை": "market mandi",
@@ -66,8 +94,12 @@ def _trigrams(s: str) -> set[str]:
 class OfflineDemoEmbedder(Embedder):
     """Network-free stand-in: glossary translation + character-trigram Jaccard overlap."""
 
+    def translate(self, text: str) -> str:
+        """Glossary-translate Indic words to English (public: used for value linking)."""
+        return self._translate(text)
+
     def _translate(self, text: str) -> str:
-        for indic, eng in GLOSSARY.items():
+        for indic, eng in sorted(GLOSSARY.items(), key=lambda kv: -len(kv[0])):  # longest first
             if indic in text:
                 text = text.replace(indic, f" {eng} ")
         return text
