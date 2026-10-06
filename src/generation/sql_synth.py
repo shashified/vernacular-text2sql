@@ -17,9 +17,26 @@ def plan_to_sql(plan: dict) -> str:
 
     from_clause = plan["tables"][0]
     join_clauses = []
-    for j in plan.get("joins", []):
-        right_table = j["right"].split(".")[0]
-        join_clauses.append(f"JOIN {right_table} ON {j['left']} = {j['right']}")
+    # Join whichever side is not in the query yet, in an order where each join
+    # connects to a table already present. Models often write a join
+    # "backwards" (right side = the table already in FROM); emitting that
+    # literally gives "FROM t JOIN t" and an ambiguous-column error.
+    joined = {from_clause}
+    pending = list(plan.get("joins", []))
+    while pending:
+        for j in pending:
+            lt, rt = j["left"].split(".")[0], j["right"].split(".")[0]
+            if lt in joined or rt in joined:
+                break
+        else:  # no join touches the tables so far: keep the model's order
+            j = pending[0]
+            lt, rt = j["left"].split(".")[0], j["right"].split(".")[0]
+        pending.remove(j)
+        new_table = rt if rt not in joined else lt
+        if new_table in joined:
+            continue  # both sides already present: nothing to add
+        joined.add(new_table)
+        join_clauses.append(f"JOIN {new_table} ON {j['left']} = {j['right']}")
 
     where_clauses = []
     for f in plan.get("filters", []):

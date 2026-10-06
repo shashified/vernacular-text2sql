@@ -127,3 +127,35 @@ def test_stage1_keeps_every_gold_table(lang):
               if not gold_tables(q["gold_sql"]) <= {el.table for _, el in
                                                     link_schema(q["questions"][lang], SCHEMA, FOREIGN_KEYS, emb, vi)}]
     assert not missed, missed
+
+
+def test_plan_to_sql_handles_backwards_join():
+    # Real failure (agri_023, Hindi): the model listed the join "backwards", so the
+    # table on the right was the one already in FROM -> "FROM t JOIN t".
+    from src.generation.sql_synth import plan_to_sql
+    plan = {"tables": ["crop_categories", "crops"],
+            "joins": [{"left": "crops.category_id", "right": "crop_categories.category_id"}],
+            "group_by": ["crop_categories.category_name"],
+            "aggregations": [{"func": "COUNT", "column": "crops.crop_id", "as": "n"}]}
+    sql = plan_to_sql(plan)
+    assert "FROM crop_categories\nJOIN crops ON" in sql
+    assert sql.count("crop_categories\n") == 1
+
+
+def test_plan_to_sql_orders_out_of_order_joins():
+    from src.generation.sql_synth import plan_to_sql
+    plan = {"tables": ["crop_production"],
+            "joins": [{"left": "districts.state_id", "right": "states.state_id"},
+                      {"left": "crop_production.district_id", "right": "districts.district_id"}]}
+    sql = plan_to_sql(plan)
+    assert sql.index("JOIN districts") < sql.index("JOIN states")
+
+
+def test_quota_errors_are_not_scored():
+    import importlib.util, os
+    spec = importlib.util.spec_from_file_location(
+        "run_eval", os.path.join(os.path.dirname(__file__), "..", "scripts", "run_eval.py"))
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    assert mod.is_quota_error("RateLimitError: Error code: 429 - {...}")
+    assert not mod.is_quota_error("PlanValidationError: plan uses unknown columns")

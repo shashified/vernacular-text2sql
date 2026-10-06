@@ -50,6 +50,13 @@ class CountingLLM(LLM):
         return self.inner.complete(prompt)
 
 
+def is_quota_error(err: str) -> bool:
+    """True if the model never answered because of a provider rate/usage limit.
+
+    Such attempts are not model mistakes, so they are not saved or scored."""
+    return err.startswith("RateLimitError") or "rate_limit_exceeded" in err
+
+
 def run_one(method: str, question: str, llm: CountingLLM, embedder, value_index) -> dict:
     llm.calls = 0
     out: dict = {}
@@ -122,11 +129,16 @@ def main() -> None:
     os.makedirs(os.path.join(ROOT, "results"), exist_ok=True)
     tag = re.sub(r"[^A-Za-z0-9.]+", "-", model)
     out_path = os.path.join(ROOT, "results", f"agri_{tag}.jsonl")
+    current = {(q["id"], l): q["questions"][l] for q in load_questions() for l in LANGS}
     done = {}
     if os.path.exists(out_path):
         with open(out_path, encoding="utf-8") as f:
             for line in f:
                 r = json.loads(line)
+                if is_quota_error(r.get("error", "")):
+                    continue  # never got an answer (provider limit): run it again
+                if current.get((r["id"], r["lang"])) != r["question"]:
+                    continue  # question wording was corrected since: run it again
                 done[(r["id"], r["lang"], r["method"])] = r
 
     questions = load_questions()
@@ -144,6 +156,12 @@ def main() -> None:
                 question = q["questions"][lang]
                 t0 = time.time()
                 res = run_one(method, question, llm, embedder, value_index)
+                if is_quota_error(res.get("error", "")):
+                    print(f"\n[{i}/{len(todo)}] Stopped: the provider's rate limit was hit "
+                          f"({res['error'][:160]}...).\nNothing was scored for this attempt. "
+                          f"Wait for the limit to reset (Groq's free daily token limit is a "
+                          f"rolling 24 h window), then re-run the same command to resume.")
+                    break
                 if "sql" in res:
                     ex = execution_accuracy(DB_PATH, res["sql"], q["gold_sql"])
                     res["ex"], res["reason"] = ex["ex"], ex["reason"]

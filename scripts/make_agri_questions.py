@@ -136,7 +136,7 @@ Q = [
          sql=f"SELECT cc.category_name, SUM(p.area_hectares) FROM {P} {CAT} {ST} WHERE s.state_name = 'Tamil Nadu' AND p.year = 2015 GROUP BY cc.category_name"),
     dict(cat="group",
          en="For each year from 2010 onwards, what was the total wheat production in Punjab?",
-         hi="2010 से आगे हर वर्ष के लिए पंजाब में गेहूं का कुल उत्पादन कितना था?",
+         hi="2010 और उसके बाद हर वर्ष के लिए पंजाब में गेहूं का कुल उत्पादन कितना था?",
          te="2010 నుండి ప్రతి సంవత్సరానికి పంజాబ్‌లో గోధుమ మొత్తం ఉత్పత్తి ఎంత?",
          hinglish="2010 se har year ke liye Punjab mein wheat ka total production kitna tha?",
          sql=f"SELECT p.year, SUM(p.production_quantity) FROM {P} {CR} {ST} WHERE c.crop_name = 'Wheat' AND s.state_name = 'Punjab' AND p.year >= 2010 GROUP BY p.year"),
