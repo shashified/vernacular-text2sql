@@ -64,7 +64,11 @@ class APILLM(LLM):
             raise LLMConfigError(
                 f"Missing {', '.join(missing)}. Copy .env.example to .env and fill it in."
             )
-        return cls(os.environ["LLM_BASE_URL"], os.environ["LLM_API_KEY"], os.environ["LLM_MODEL"])
+        # A local model on a laptop can take minutes per answer when it "thinks";
+        # LLM_TIMEOUT (seconds) lets .env.ollama allow that without slowing Groq.
+        timeout = float(os.getenv("LLM_TIMEOUT", "60"))
+        return cls(os.environ["LLM_BASE_URL"], os.environ["LLM_API_KEY"], os.environ["LLM_MODEL"],
+                   timeout=timeout)
 
     def complete(self, prompt: str) -> str:
         from openai import RateLimitError, APIConnectionError, APITimeoutError, InternalServerError

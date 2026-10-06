@@ -4,6 +4,7 @@ Evaluate the direct baseline vs. our pipeline on the AgriIndia pilot benchmark.
     python scripts/run_eval.py --limit 5                 # quick smoke test (5 questions)
     python scripts/run_eval.py                           # all 40 questions x 4 languages x 2 methods
     python scripts/run_eval.py --langs hi,te --methods pipeline
+    python scripts/run_eval.py --env .env.ollama --sleep 0   # local Qwen3-8B via Ollama
 
 Results are appended to results/agri_<model>.jsonl as each answer comes back,
 so you can stop any time (Ctrl+C) and re-run the same command to RESUME.
@@ -116,11 +117,13 @@ def main() -> None:
     ap.add_argument("--methods", default=",".join(METHODS))
     ap.add_argument("--limit", type=int, default=0, help="only the first N questions")
     ap.add_argument("--sleep", type=float, default=2.0, help="seconds between model calls")
+    ap.add_argument("--env", default=None,
+                    help="settings file to use instead of .env, e.g. .env.ollama for the local model")
     args = ap.parse_args()
 
     if not os.path.exists(DB_PATH):
         sys.exit("Database missing. Run:  python scripts/build_agri_db.py")
-    llm_real = APILLM.from_env()
+    llm_real = APILLM.from_env(os.path.join(ROOT, args.env) if args.env else None)
     model = llm_real.model
     llm = CountingLLM(llm_real, args.sleep)
     embedder = OfflineDemoEmbedder()

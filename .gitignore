@@ -7,3 +7,4 @@ data/*.csv
 data/raw/
 *.db
 .DS_Store
+results/incoming/
