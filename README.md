@@ -65,6 +65,40 @@ so we **reproduce the DIN-SQL(+evidence) baseline ourselves with the same model*
 use for our method and report ΔEX on that model. IndicDB's Table 3 (below) is the
 reference point, not a like-for-like comparison.
 
+## AgriIndia pilot benchmark (our own data, while IndicDB is unavailable)
+
+IndicDB's only download link (an anonymous review repository) has **expired**, and no
+permanent release exists yet; we've written to the authors. So we built a pilot
+benchmark from the same kind of source IndicDB uses: **India's official district-wise
+crop statistics** (Ministry of Agriculture APY data, data.gov.in), 1997–2020.
+
+- **Database:** 6 tables (`states`, `districts`, `crop_categories`, `crops`, `seasons`,
+  `crop_production`), 326,035 production records, 36 states/UTs, 771 districts, 53 crops.
+- **Questions:** 40, each in **English, Hindi, Telugu, Hinglish** (160 total), with
+  verified gold SQL: 10 single aggregates, 4 counts, 17 GROUP BY, 9 top-k.
+  (Indic wording should be reviewed by native speakers before final reporting.)
+
+```bash
+pip install pandas pytest openai python-dotenv
+python scripts/build_agri_db.py          # downloads data once, builds data/agri/agri_india.db
+python scripts/eval_stage1.py            # Stage 1 schema-linking results (no API calls)
+python scripts/run_eval.py --limit 5     # quick check with the real model
+python scripts/run_eval.py               # full run: direct baseline vs our pipeline (resumable)
+```
+
+**Stage 1 result (no model needed)**: % of questions where schema linking kept every
+table the gold SQL needs (see `results/stage1_schema_linking.md`):
+
+| Configuration | en | hi | te | hinglish |
+|---|---|---|---|---|
+| top-6 similarity only | 30.0% | 22.5% | 27.5% | 27.5% |
+| + join-path expansion | 42.5% | 32.5% | 35.0% | 45.0% |
+| + value linking | 92.5% | 97.5% | 97.5% | 97.5% |
+| + table-name linking (full Stage 1) | **100%** | **100%** | **100%** | **100%** |
+
+Caveat: the offline glossary and these 40 questions were written together, so this is an
+optimistic pilot figure; the real multilingual embedder and held-out questions come next.
+
 ## Working end-to-end demo (run this first)
 
 A full Stage 1 -> 2 -> 3 -> 4 pipeline runs right now, offline, on a toy
