@@ -38,11 +38,19 @@ def plan_to_sql(plan: dict) -> str:
         joined.add(new_table)
         join_clauses.append(f"JOIN {new_table} ON {j['left']} = {j['right']}")
 
+    def lit(v):
+        return "'" + v.replace("'", "''") + "'" if isinstance(v, str) else str(v)
+
     where_clauses = []
     for f in plan.get("filters", []):
-        v = f["value"]
-        v_sql = "'" + v.replace("'", "''") + "'" if isinstance(v, str) else str(v)
-        where_clauses.append(f"{f['column']} {f['op']} {v_sql}")
+        v, op = f["value"], str(f["op"]).lower()
+        if op == "between" or (isinstance(v, list) and op not in ("in", "=")):
+            # e.g. {"op": "between", "value": [2010, 2015]}  (the pilot run produced "BETWEEN [2010, 2015]")
+            where_clauses.append(f"{f['column']} BETWEEN {lit(v[0])} AND {lit(v[1])}")
+        elif op == "in" or isinstance(v, list):
+            where_clauses.append(f"{f['column']} IN ({', '.join(lit(x) for x in v)})")
+        else:
+            where_clauses.append(f"{f['column']} {f['op']} {lit(v)}")
 
     sql = f"SELECT {', '.join(select_parts)}\nFROM {from_clause}"
     if join_clauses:

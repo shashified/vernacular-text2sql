@@ -19,7 +19,7 @@ import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from scripts.run_eval import ROOT, is_quota_error, summarize  # noqa: E402
+from scripts.run_eval import METHODS, ROOT, is_quota_error, summarize  # noqa: E402
 from src.benchmark.agri import LANGS, load_questions  # noqa: E402
 
 
@@ -70,10 +70,11 @@ def main() -> None:
         for r in rows:
             f.write(json.dumps(r, ensure_ascii=False) + "\n")
 
-    total = len(load_questions()) * len(LANGS) * 2
+    methods_present = sorted({r["method"] for r in rows}, key=lambda m: METHODS.index(m) if m in METHODS else 99)
+    total = len(load_questions()) * len(LANGS) * len(methods_present)
     print(f"\nMerged {len(rows)} of {total} answers -> {os.path.relpath(out_path, ROOT)}")
     missing = sorted({(q, l) for q, l in current} - {(r["id"], r["lang"]) for r in rows
-                      if (r["id"], r["lang"], "direct") in merged and (r["id"], r["lang"], "pipeline") in merged})
+                      if all((r["id"], r["lang"], m) in merged for m in methods_present)})
     if missing:
         print(f"Still missing ({len(missing)} question/language pairs), e.g. {missing[:6]}")
     summary = summarize(rows, tag)

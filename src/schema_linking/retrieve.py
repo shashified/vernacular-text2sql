@@ -171,6 +171,60 @@ def link_values(question: str, catalog: list[SchemaElement], value_index: dict[s
     return hits
 
 
+def match_values(question: str, value_index: dict[str, list[str]], translate=None,
+                 glossary: dict[str, str] | None = None) -> list[dict]:
+    """
+    Like link_values, but returns WHICH stored value matched and, when known, the original
+    word in the question -- so the planner can be told it explicitly:
+
+        {"word": "గోధుమ", "column": "crops.crop_name", "value": "Wheat"}
+
+    Found in the Qwen3-8B pilot run: Stage 1 already knew గోధుమ = Wheat, but only used it
+    to choose tables; the model then guessed the crop (Barley) and got the answer wrong.
+    A longer stored value wins over a shorter one it contains ("Bengal Gram" over "Gram").
+    """
+    import re
+    text = (translate(question) if translate else question).lower()
+    found = []
+    for ref, values in value_index.items():
+        for val in values:
+            for v in _value_variants(str(val)):
+                m = re.search(rf"(?<![a-z]){re.escape(v)}(?![a-z])", text)
+                if m:
+                    found.append({"column": ref, "value": str(val), "span": (m.start(), m.end()),
+                                  "variant": v})
+                    break
+    # drop a match whose text lies inside a longer match in the same column ("gram" in "bengal gram")
+    found.sort(key=lambda f: -(f["span"][1] - f["span"][0]))
+    kept = []
+    for f in found:
+        if not any(k["column"] == f["column"] and k["span"][0] <= f["span"][0] and f["span"][1] <= k["span"][1]
+                   for k in kept):
+            kept.append(f)
+    out = []
+    for f in kept:
+        word = None
+        if glossary:
+            for indic, eng in sorted(glossary.items(), key=lambda kv: -len(kv[0])):
+                if indic in question and f["variant"] in eng.lower():
+                    word = indic
+                    break
+        out.append({"word": word, "column": f["column"], "value": f["value"]})
+    return out
+
+
+def value_hint_text(matches: list[dict]) -> str:
+    """Matches -> a short instruction for the planner."""
+    if not matches:
+        return ""
+    lines = ["Values mentioned in the question, written exactly as stored in the database "
+             "(use these exact values in filters):"]
+    for m in matches:
+        src = f"'{m['word']}' -> " if m.get("word") else ""
+        lines.append(f"- {src}{m['column']} = '{m['value']}'")
+    return "\n".join(lines)
+
+
 def merge_candidates(*lists):
     """Concatenate candidate lists, keeping the first occurrence of each element."""
     seen, out = set(), []

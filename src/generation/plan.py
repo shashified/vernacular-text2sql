@@ -40,7 +40,11 @@ Rules:
   where "right" is a column of the table being joined.
 - Filter values must be written exactly as stored in the database, in English
   (e.g. a question about "पंजाब" or "పంజాబ్" filters states.state_name = "Punjab").
-- op is one of =, >, <, >=, <=.
+- op is one of =, !=, >, <, >=, <=, between (value [low, high]) or in (value [a, b, ...]).
+- Every year, year range, place, crop, season or category mentioned in the question
+  must appear as a filter.
+- group_by must use readable name columns (e.g. states.state_name, crops.crop_name,
+  districts.district_name), never *_id columns, so the answer shows names.
 - For "top N" / "which N ... the most" questions use order_by with the aggregate
   alias and set "limit" to N.
 - Output the JSON object only: no explanation, no markdown.
@@ -71,7 +75,8 @@ def build_prompt(question: str, schema_text: str, evidence: str = "") -> str:
 
 
 def generate_plan(question: str, schema_text: str, llm: LLM, *, evidence: str = "",
-                  allowed_columns: set[str] | None = None, max_retries: int = 1) -> dict:
+                  allowed_columns: set[str] | None = None, max_retries: int = 1,
+                  required_values: list[tuple[str, str]] | None = None) -> dict:
     """Ask for a plan, validate it, and on rejection retry with the reason as feedback."""
     prompt = build_prompt(question, schema_text, evidence)
     last_error: Exception | None = None
@@ -80,7 +85,7 @@ def generate_plan(question: str, schema_text: str, llm: LLM, *, evidence: str = 
         raw = llm.complete(p)
         try:
             plan = extract_json(raw)
-            validate_plan(question, plan, allowed_columns)
+            validate_plan(question, plan, allowed_columns, required_values)
             return plan
         except (PlanValidationError, ValueError) as e:
             last_error = e
@@ -118,10 +123,119 @@ def _plan_columns(plan: dict) -> set[str]:
     return {r for r in refs if r and r != "*"}
 
 
-def validate_plan(question: str, plan: dict, allowed_columns: set[str] | None = None) -> None:
+AGG_FUNCS = {"AVG", "SUM", "COUNT", "MAX", "MIN"}
+FILTER_OPS = {"=", ">", "<", ">=", "<=", "!=", "between", "in"}
+YEAR_RE = re.compile(r"(?<!\d)(19[5-9]\d|20[0-3]\d)(?!\d)")
+
+
+def _check_structure(plan: dict) -> None:
+    """Shape checks, so a malformed plan is sent back to the model instead of crashing later.
+    (Pilot run: a plan with an aggregation missing "func" crashed SQL synthesis.)"""
+    for a in plan.get("aggregations", []) or []:
+        if not isinstance(a, dict) or str(a.get("func", "")).upper() not in AGG_FUNCS \
+                or not a.get("column") or not a.get("as"):
+            raise PlanValidationError(
+                f"Each aggregation needs 'func' (one of {sorted(AGG_FUNCS)}), 'column' and 'as'; got {a!r}.")
+        a["func"] = str(a["func"]).upper()
+    for f in plan.get("filters", []) or []:
+        if isinstance(f, dict) and isinstance(f.get("op"), str):
+            f["op"] = f["op"].strip().lower() if f["op"].strip().lower() in ("between", "in") else f["op"].strip()
+        if not isinstance(f, dict) or not f.get("column") or f.get("op") not in FILTER_OPS or "value" not in f:
+            raise PlanValidationError(
+                f"Each filter needs 'column', 'op' (one of {sorted(FILTER_OPS)}) and 'value'; got {f!r}.")
+        if f["op"] == "between" and not (isinstance(f["value"], list) and len(f["value"]) == 2):
+            raise PlanValidationError(f"A 'between' filter needs value [low, high]; got {f!r}.")
+        if f["op"] == "in" and not (isinstance(f["value"], list) and f["value"]):
+            raise PlanValidationError(f"An 'in' filter needs a non-empty list value; got {f!r}.")
+    for j in plan.get("joins", []) or []:
+        if not isinstance(j, dict) or "." not in str(j.get("left", "")) or "." not in str(j.get("right", "")):
+            raise PlanValidationError(f"Each join needs 'left' and 'right' as table.column; got {j!r}.")
+
+
+def _check_tables_joined(plan: dict) -> None:
+    """Every table a column comes from must be in the query, and every table must be joined.
+    (Pilot run: a plan filtered on crops.crop_name without joining crops -> SQL error.)"""
+    tables = list(dict.fromkeys(plan.get("tables") or []))
+    joins = [(j["left"].split(".")[0], j["right"].split(".")[0]) for j in plan.get("joins", []) or []]
+    present = set(tables) | {t for pair in joins for t in pair}   # a join also brings its table in
+    used = {c.split(".")[0] for c in _plan_columns(plan) if "." in c}
+    missing = sorted(used - present)
+    if missing:
+        raise PlanValidationError(
+            f"The plan uses columns from {missing} but never joins those tables. "
+            f"Add them to 'tables' and add the joins that connect them (use the foreign keys shown).")
+    joined = {tables[0]}
+    changed = True
+    while changed:
+        changed = False
+        for a, b in joins:
+            if (a in joined) != (b in joined):
+                joined.update({a, b})
+                changed = True
+    unjoined = sorted(present - joined)
+    if unjoined:
+        raise PlanValidationError(
+            f"Tables {unjoined} are listed but not connected to {tables[0]} by any join. "
+            f"Add the joins (use the foreign keys shown).")
+
+
+def _filter_values(plan: dict) -> list[str]:
+    out = []
+    for f in plan.get("filters", []) or []:
+        v = f.get("value")
+        out.extend(str(x) for x in (v if isinstance(v, list) else [v]))
+    return out
+
+
+def _check_group_by_names(plan: dict, allowed_columns: set[str] | None) -> None:
+    """Group by a readable name, not an id. (Pilot run: 15 of 39 pipeline failures grouped by
+    districts.district_id, so the answer listed id numbers instead of district names.)"""
+    if not allowed_columns:
+        return
+    for g in plan.get("group_by", []) or []:
+        if "." in g and g.endswith("_id"):
+            table = g.split(".")[0]
+            names = sorted(c for c in allowed_columns if c.startswith(table + ".") and c.endswith("_name"))
+            if names:
+                raise PlanValidationError(
+                    f"group_by uses the id column {g}; group by the readable name {names[0]} instead "
+                    f"(so the answer shows names, not id numbers).")
+
+
+def _check_years(question: str, plan: dict) -> None:
+    """Every year the question mentions must be used in a filter. (Pilot run: 5 failures
+    dropped "2015" or "from 2010 onwards" and summed over all years.) Digits are the same
+    in all four languages' questions, so this check is language-independent."""
+    years = sorted(set(YEAR_RE.findall(question)))
+    vals = _filter_values(plan)
+    missing = [y for y in years if not any(y in v for v in vals)]
+    if missing:
+        raise PlanValidationError(
+            f"The question mentions the year(s) {missing} but no filter uses them. "
+            f"Add the year filter (e.g. {{\"column\": \"<table>.year\", \"op\": \"=\", \"value\": {missing[0]}}}, "
+            f"or >= / between for ranges).")
+
+
+def _check_required_values(plan: dict, required_values: list[tuple[str, str]] | None) -> None:
+    """Every stored value Stage 1 matched in the question must be filtered on. (Pilot run: 16
+    failures left out the crop/state or used the wrong one, e.g. 'Barley' for గోధుమ = wheat.)"""
+    if not required_values:
+        return
+    vals = {v.lower() for v in _filter_values(plan)}
+    missing = [(c, v) for c, v in required_values if v.lower() not in vals]
+    if missing:
+        wanted = "; ".join(f"{c} = '{v}'" for c, v in missing)
+        raise PlanValidationError(
+            f"The question mentions values that are missing from the filters: {wanted}. "
+            f"Add these filters with exactly these stored values.")
+
+
+def validate_plan(question: str, plan: dict, allowed_columns: set[str] | None = None,
+                  required_values: list[tuple[str, str]] | None = None) -> None:
     """The checkable guards. Raises PlanValidationError with a reason the model can act on."""
     if not isinstance(plan, dict) or not plan.get("tables"):
         raise PlanValidationError("Plan must be a JSON object with a non-empty 'tables' list.")
+    _check_structure(plan)
     if needs_group_by(question) and (not plan.get("group_by") or not plan.get("aggregations")):
         raise PlanValidationError(
             f"Question implies a per-category aggregate but plan has "
@@ -135,3 +249,7 @@ def validate_plan(question: str, plan: dict, allowed_columns: set[str] | None = 
                 f"Plan uses columns that are not in the schema: {unknown}. "
                 f"Use only these: {sorted(allowed_columns)}"
             )
+    _check_tables_joined(plan)
+    _check_group_by_names(plan, allowed_columns)
+    _check_years(question, plan)
+    _check_required_values(plan, required_values)

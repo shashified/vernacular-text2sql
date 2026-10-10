@@ -29,7 +29,7 @@ def main() -> None:
         rows = [json.loads(l) for l in open(path, encoding="utf-8")]
         changed = 0
         for r in rows:
-            if r["method"] != "pipeline" or not r.get("plan"):
+            if not r["method"].startswith("pipeline") or not r.get("plan"):
                 continue
             sql = plan_to_sql(r["plan"])
             if sql == r.get("sql"):

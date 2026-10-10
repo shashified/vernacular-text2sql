@@ -159,3 +159,159 @@ def test_quota_errors_are_not_scored():
     spec.loader.exec_module(mod)
     assert mod.is_quota_error("RateLimitError: Error code: 429 - {...}")
     assert not mod.is_quota_error("PlanValidationError: plan uses unknown columns")
+
+
+# --- pipeline v2: value hints + stricter plan checks (from failures in the Qwen3-8B pilot run) ---
+
+def _vi():
+    return build_value_index(DB_PATH, VALUE_COLUMNS)
+
+
+@needs_db
+def test_value_hints_name_the_telugu_crop():
+    from src.schema_linking.embedder import GLOSSARY
+    from src.schema_linking.retrieve import match_values, value_hint_text
+    emb = OfflineDemoEmbedder()
+    # Real failure: Qwen3-8B read గోధుమ (wheat) as Barley.
+    m = match_values("2015లో హర్యానాలో గోధుమ సగటు దిగుబడి హెక్టారుకు ఎంత?", _vi(), emb.translate, GLOSSARY)
+    pairs = {(x["column"], x["value"]) for x in m}
+    assert ("crops.crop_name", "Wheat") in pairs and ("states.state_name", "Haryana") in pairs
+    assert any(x["word"] == "గోధుమ" for x in m)
+    assert "crops.crop_name = 'Wheat'" in value_hint_text(m)
+
+
+@needs_db
+def test_value_hints_prefer_longer_match():
+    from src.schema_linking.embedder import GLOSSARY
+    from src.schema_linking.retrieve import match_values
+    # Real failure: West Bengal + potato was answered as 'Bengal Gram'.
+    m = match_values("2015లో పశ్చిమ బెంగాల్‌లో బంగాళాదుంప మొత్తం ఉత్పత్తి ఎంత?", _vi(),
+                     OfflineDemoEmbedder().translate, GLOSSARY)
+    vals = {x["value"] for x in m}
+    assert {"West Bengal", "Potato"} <= vals and "Bengal Gram" not in vals
+
+
+@needs_db
+def test_value_hints_match_every_gold_value_in_the_pilot():
+    import re
+    from src.schema_linking.embedder import GLOSSARY
+    from src.schema_linking.retrieve import match_values
+    emb, vi = OfflineDemoEmbedder(), _vi()
+    for q in QUESTIONS:
+        gold = set(re.findall(r"'([^']*)'", q["gold_sql"]))
+        for lang in LANGS:
+            got = {x["value"] for x in match_values(q["questions"][lang], vi, emb.translate, GLOSSARY)}
+            assert got == gold, (q["id"], lang, got, gold)
+
+
+def test_validator_rejects_aggregation_without_func():
+    # Real failure: plan had an aggregation with no "func" -> crashed SQL synthesis.
+    plan = {"tables": ["crop_production"], "aggregations": [{"column": "crop_production.yield_per_hectare", "as": "m"}]}
+    with pytest.raises(PlanValidationError, match="func"):
+        validate_plan("max yield in Karnataka", plan)
+
+
+def test_validator_rejects_filter_on_unjoined_table():
+    # Real failure: filtered on crops.crop_name without joining crops -> "no such column".
+    plan = {"tables": ["crop_production", "districts", "states"],
+            "joins": [{"left": "crop_production.district_id", "right": "districts.district_id"},
+                      {"left": "districts.state_id", "right": "states.state_id"}],
+            "filters": [{"column": "crops.crop_name", "op": "=", "value": "Maize"}],
+            "aggregations": [{"func": "MAX", "column": "crop_production.yield_per_hectare", "as": "m"}]}
+    with pytest.raises(PlanValidationError, match="crops"):
+        validate_plan("max yield of maize", plan)
+
+
+def test_validator_rejects_table_listed_but_not_joined():
+    plan = {"tables": ["crop_production", "crops"], "joins": [],
+            "aggregations": [{"func": "COUNT", "column": "*", "as": "n"}]}
+    with pytest.raises(PlanValidationError, match="not connected"):
+        validate_plan("how many records", plan)
+
+
+@needs_db
+def test_pipeline_v2_tells_the_model_the_value():
+    q = next(x for x in QUESTIONS if x["id"] == "agri_003")  # avg wheat yield, Haryana, 2015
+    plan = {"tables": ["crop_production"],
+            "joins": [{"left": "crop_production.crop_id", "right": "crops.crop_id"},
+                      {"left": "crop_production.district_id", "right": "districts.district_id"},
+                      {"left": "districts.state_id", "right": "states.state_id"}],
+            "filters": [{"column": "crops.crop_name", "op": "=", "value": "Wheat"},
+                        {"column": "states.state_name", "op": "=", "value": "Haryana"},
+                        {"column": "crop_production.year", "op": "=", "value": 2015}],
+            "group_by": [], "aggregations": [{"func": "AVG", "column": "crop_production.yield_per_hectare", "as": "a"}]}
+
+    class Recording(ScriptedLLM):
+        prompts = []
+        def complete(self, prompt):
+            self.prompts.append(prompt)
+            return super().complete(prompt)
+
+    llm = Recording([json.dumps(plan)])
+    out = run_pipeline(q["questions"]["te"], SCHEMA, FOREIGN_KEYS, llm, OfflineDemoEmbedder(),
+                       value_index=_vi(), value_hints=True)
+    assert "crops.crop_name = 'Wheat'" in llm.prompts[0]
+    assert execution_accuracy(DB_PATH, out["sql"], q["gold_sql"])["ex"] == 1
+    # v1 (no hints) must NOT get the hint -- that's the comparison we report
+    llm1 = Recording([json.dumps(plan)]); llm1.prompts = []
+    run_pipeline(q["questions"]["te"], SCHEMA, FOREIGN_KEYS, llm1, OfflineDemoEmbedder(), value_index=_vi())
+    assert "crops.crop_name = 'Wheat'" not in llm1.prompts[0]
+
+
+def _base_plan(**kw):
+    p = {"tables": ["crop_production"],
+         "joins": [{"left": "crop_production.district_id", "right": "districts.district_id"},
+                   {"left": "districts.state_id", "right": "states.state_id"}],
+         "filters": [{"column": "crop_production.year", "op": "=", "value": 2015}],
+         "group_by": ["states.state_name"],
+         "aggregations": [{"func": "SUM", "column": "crop_production.production_quantity", "as": "t"}]}
+    p.update(kw)
+    return p
+
+ALLOWED = {"states.state_id", "states.state_name", "districts.district_id", "districts.state_id",
+           "crop_production.year", "crop_production.district_id", "crop_production.production_quantity"}
+
+
+def test_validator_wants_names_not_ids_in_group_by():
+    # Real failure pattern (15 of 39): GROUP BY districts.district_id -> answer shows id numbers.
+    with pytest.raises(PlanValidationError, match="states.state_name"):
+        validate_plan("total production for each state in 2015", _base_plan(group_by=["states.state_id"]), ALLOWED)
+    validate_plan("total production for each state in 2015", _base_plan(), ALLOWED)  # names are fine
+
+
+@pytest.mark.parametrize("q", ["2010 और उसके बाद हर वर्ष के लिए पंजाब में कुल उत्पादन",
+                               "For each year from 2010 onwards, total production per state"])
+def test_validator_requires_year_filters(q):
+    # Real failure pattern (5 of 39): "from 2010 onwards" dropped -> summed over all years.
+    with pytest.raises(PlanValidationError, match="2010"):
+        validate_plan(q, _base_plan(filters=[]), ALLOWED)
+    validate_plan(q, _base_plan(filters=[{"column": "crop_production.year", "op": ">=", "value": 2010}]), ALLOWED)
+
+
+def test_validator_requires_matched_values():
+    req = [("crops.crop_name", "Wheat")]
+    with pytest.raises(PlanValidationError, match="Wheat"):
+        validate_plan("x 2015", _base_plan(), None, req)
+    ok = _base_plan(filters=[{"column": "crop_production.year", "op": "=", "value": 2015},
+                             {"column": "crops.crop_name", "op": "=", "value": "Wheat"}],
+                    joins=_base_plan()["joins"] + [{"left": "crop_production.crop_id", "right": "crops.crop_id"}])
+    validate_plan("x 2015", ok, None, req)
+
+
+@needs_db
+def test_between_filter_is_written_as_sql_between():
+    # Real failure: the model wrote value [2010, 2015] and we emitted "BETWEEN [2010, 2015]".
+    q = next(x for x in QUESTIONS if x["id"] == "agri_025")
+    plan = {"tables": ["crop_production"],
+            "joins": [{"left": "crop_production.crop_id", "right": "crops.crop_id"},
+                      {"left": "crop_production.district_id", "right": "districts.district_id"},
+                      {"left": "districts.state_id", "right": "states.state_id"}],
+            "filters": [{"column": "crops.crop_name", "op": "=", "value": "Rice"},
+                        {"column": "states.state_name", "op": "=", "value": "Andhra Pradesh"},
+                        {"column": "crop_production.year", "op": "between", "value": [2010, 2015]}],
+            "group_by": ["crop_production.year"],
+            "aggregations": [{"func": "AVG", "column": "crop_production.yield_per_hectare", "as": "a"}]}
+    validate_plan(q["questions"]["en"], plan)
+    sql = plan_to_sql(plan)
+    assert "BETWEEN 2010 AND 2015" in sql
+    assert execution_accuracy(DB_PATH, sql, q["gold_sql"])["ex"] == 1

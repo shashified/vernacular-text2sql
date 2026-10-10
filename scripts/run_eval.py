@@ -34,7 +34,10 @@ from src.pipeline import run_pipeline
 from src.schema_linking.embedder import OfflineDemoEmbedder
 from src.schema_linking.retrieve import build_value_index
 
-METHODS = ("direct", "pipeline")
+# direct      = baseline: whole schema -> SQL in one call
+# pipeline    = our pipeline v1 (Stage 1 + checked plan)
+# pipeline_v2 = v1 + Stage 1's matched values passed to the planner as hints + stricter plan checks
+METHODS = ("direct", "pipeline", "pipeline_v2")
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
 
@@ -65,8 +68,11 @@ def run_one(method: str, question: str, llm: CountingLLM, embedder, value_index)
         if method == "direct":
             out["sql"] = direct_sql(question, full_schema_text(), llm)
         else:
-            r = run_pipeline(question, SCHEMA, FOREIGN_KEYS, llm, embedder, value_index=value_index)
+            r = run_pipeline(question, SCHEMA, FOREIGN_KEYS, llm, embedder, value_index=value_index,
+                             value_hints=(method == "pipeline_v2"))
             out.update(sql=r["sql"], plan=r["plan"], stage1_tables=r["stage1_tables"])
+            if r.get("value_hints"):
+                out["value_hints"] = r["value_hints"]
     except Exception as e:  # model reply unusable, or plan rejected twice
         out["error"] = f"{type(e).__name__}: {e}"[:500]
     out["llm_calls"] = llm.calls
