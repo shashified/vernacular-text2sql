@@ -315,3 +315,14 @@ def test_between_filter_is_written_as_sql_between():
     sql = plan_to_sql(plan)
     assert "BETWEEN 2010 AND 2015" in sql
     assert execution_accuracy(DB_PATH, sql, q["gold_sql"])["ex"] == 1
+
+
+def test_connection_errors_are_not_scored():
+    # Real case: Ollama was not running; the attempt must not be saved as a wrong answer.
+    import importlib.util, os
+    spec = importlib.util.spec_from_file_location(
+        "run_eval", os.path.join(os.path.dirname(__file__), "..", "scripts", "run_eval.py"))
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    assert mod.is_quota_error("APIConnectionError: Connection error.")
+    assert not mod.is_quota_error("APITimeoutError: Request timed out.")

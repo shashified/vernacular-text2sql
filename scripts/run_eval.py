@@ -58,7 +58,9 @@ def is_quota_error(err: str) -> bool:
     """True if the model never answered because of a provider rate/usage limit.
 
     Such attempts are not model mistakes, so they are not saved or scored."""
-    return err.startswith("RateLimitError") or "rate_limit_exceeded" in err
+    return (err.startswith("RateLimitError") or "rate_limit_exceeded" in err
+            # the model server was not reachable at all (e.g. Ollama not running): not a model answer
+            or err.startswith("APIConnectionError"))
 
 
 def run_one(method: str, question: str, llm: CountingLLM, embedder, value_index) -> dict:
@@ -122,6 +124,9 @@ def main() -> None:
     ap.add_argument("--langs", default=",".join(LANGS))
     ap.add_argument("--methods", default=",".join(METHODS))
     ap.add_argument("--limit", type=int, default=0, help="only the first N questions")
+    ap.add_argument("--only-failed", default=None, metavar="METHOD",
+                    help="only questions/languages that METHOD got wrong in the saved results "
+                         "(e.g. --only-failed pipeline to re-test v1's failures with v2)")
     ap.add_argument("--sleep", type=float, default=2.0, help="seconds between model calls")
     ap.add_argument("--env", default=None,
                     help="settings file to use instead of .env, e.g. .env.ollama for the local model")
@@ -156,6 +161,12 @@ def main() -> None:
     langs = [l.strip() for l in args.langs.split(",") if l.strip()]
     methods = [m.strip() for m in args.methods.split(",") if m.strip()]
     todo = [(q, l, m) for q in questions for l in langs for m in methods if (q["id"], l, m) not in done]
+    if args.only_failed:
+        failed = {(qid, l) for (qid, l, m), r in done.items() if m == args.only_failed and not r["ex"]}
+        if not failed:
+            sys.exit(f"No saved failures for method '{args.only_failed}' in {os.path.relpath(out_path, ROOT)}.")
+        todo = [(q, l, m) for q, l, m in todo if (q["id"], l) in failed]
+        print(f"Only the {len(failed)} question/language pairs that '{args.only_failed}' got wrong.")
     print(f"Model: {model} | {len(questions)} questions x {langs} x {methods} | "
           f"{len(todo)} to run, {len(done)} already saved -> {os.path.relpath(out_path, ROOT)}")
 
@@ -166,6 +177,12 @@ def main() -> None:
                 t0 = time.time()
                 res = run_one(method, question, llm, embedder, value_index)
                 if is_quota_error(res.get("error", "")):
+                    if res["error"].startswith("APIConnectionError"):
+                        print(f"\n[{i}/{len(todo)}] Stopped: could not reach the model server "
+                              f"({res['error'][:120]}). If you use Ollama, start it (open the Ollama app "
+                              f"or run 'ollama serve' in another window), check 'curl http://localhost:11434', "
+                              f"then re-run the same command to resume. Nothing was scored for this attempt.")
+                        break
                     print(f"\n[{i}/{len(todo)}] Stopped: the provider's rate limit was hit "
                           f"({res['error'][:160]}...).\nNothing was scored for this attempt. "
                           f"Wait for the limit to reset (Groq's free daily token limit is a "
