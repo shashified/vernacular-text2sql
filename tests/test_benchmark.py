@@ -326,3 +326,27 @@ def test_connection_errors_are_not_scored():
     spec.loader.exec_module(mod)
     assert mod.is_quota_error("APIConnectionError: Connection error.")
     assert not mod.is_quota_error("APITimeoutError: Request timed out.")
+
+
+def test_llm_timeout_is_not_retried():
+    """A local model that 'thinks' past LLM_TIMEOUT must fail once, not loop for hours."""
+    openai = pytest.importorskip("openai")
+    try:  # openai 1.x/2.x use httpx, 3.x uses httpx2
+        import httpx
+    except ImportError:
+        httpx = pytest.importorskip("httpx2")
+    from src.generation.llm import APILLM
+
+    llm = APILLM("http://localhost:1/v1", "k", "m", timeout=1)
+    assert llm.client.max_retries == 0
+    calls = []
+
+    class Completions:
+        def create(self, **kw):
+            calls.append(1)
+            raise openai.APITimeoutError(request=httpx.Request("POST", "http://localhost:1/v1"))
+
+    llm.client = type("C", (), {"chat": type("Ch", (), {"completions": Completions()})()})()
+    with pytest.raises(openai.APITimeoutError):
+        llm.complete("q")
+    assert len(calls) == 1

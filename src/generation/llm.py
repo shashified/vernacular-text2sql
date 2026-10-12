@@ -45,7 +45,9 @@ class APILLM(LLM):
     def __init__(self, base_url: str, api_key: str, model: str,
                  max_retries: int = 5, timeout: float = 60.0):
         from openai import OpenAI
-        self.client = OpenAI(base_url=base_url, api_key=api_key, timeout=timeout)
+        # max_retries=0: the retry loop in complete() is the only one. The client's own
+        # hidden retries multiplied ours (3 x 6 tries x LLM_TIMEOUT = hours on one question).
+        self.client = OpenAI(base_url=base_url, api_key=api_key, timeout=timeout, max_retries=0)
         self.model = model
         self.max_retries = max_retries
 
@@ -81,7 +83,11 @@ class APILLM(LLM):
                     temperature=0,
                 )
                 return resp.choices[0].message.content or ""
-            except (RateLimitError, APIConnectionError, APITimeoutError, InternalServerError):
+            except APITimeoutError:
+                # The model answered nothing within LLM_TIMEOUT. At temperature 0 a retry asks
+                # the same thing and "thinks" just as long, so give up and let it be scored.
+                raise
+            except (RateLimitError, APIConnectionError, InternalServerError):
                 # Free tiers rate-limit: back off and retry instead of crashing a long eval run.
                 if attempt == self.max_retries:
                     raise
