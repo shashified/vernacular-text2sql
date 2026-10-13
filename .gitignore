@@ -8,3 +8,5 @@ data/raw/
 *.db
 .DS_Store
 results/incoming/
+web/node_modules/
+*.db-journal

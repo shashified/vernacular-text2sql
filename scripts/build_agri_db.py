@@ -86,6 +86,10 @@ CREATE TABLE crop_production (
 CREATE INDEX idx_prod_year  ON crop_production(year);
 CREATE INDEX idx_prod_crop  ON crop_production(crop_id);
 CREATE INDEX idx_prod_dist  ON crop_production(district_id);
+-- composite index: most questions filter on a crop AND a year (see docs/DBMS_STUDY.md)
+CREATE INDEX idx_prod_crop_year ON crop_production(crop_id, year);
+-- the natural key of a production record, enforced by the DBMS rather than only at load time
+CREATE UNIQUE INDEX uq_prod_key ON crop_production(district_id, crop_id, season_id, year);
 """
 
 

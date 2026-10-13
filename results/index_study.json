@@ -1,0 +1,994 @@
+{
+ "none": {
+  "per": {
+   "agri_001": {
+    "ms": 21.52932499984672,
+    "cat": "agg",
+    "full_scan": true,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SCAN p | SEARCH d USING INTEGER PRIMARY KEY (rowid=?)"
+   },
+   "agri_002": {
+    "ms": 21.82049900011407,
+    "cat": "agg",
+    "full_scan": true,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SCAN p | SEARCH d USING INTEGER PRIMARY KEY (rowid=?)"
+   },
+   "agri_003": {
+    "ms": 22.73822699999073,
+    "cat": "agg",
+    "full_scan": true,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SCAN p | SEARCH d USING INTEGER PRIMARY KEY (rowid=?)"
+   },
+   "agri_004": {
+    "ms": 21.888217999958215,
+    "cat": "agg",
+    "full_scan": true,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SCAN p | SEARCH d USING INTEGER PRIMARY KEY (rowid=?)"
+   },
+   "agri_005": {
+    "ms": 22.227169999951002,
+    "cat": "agg",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p | SEARCH d USING INTEGER PRIMARY KEY (rowid=?)"
+   },
+   "agri_006": {
+    "ms": 29.22537199992803,
+    "cat": "agg",
+    "full_scan": true,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SCAN p | SEARCH d USING INTEGER PRIMARY KEY (rowid=?)"
+   },
+   "agri_007": {
+    "ms": 21.982540999943012,
+    "cat": "agg",
+    "full_scan": true,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH se USING COVERING INDEX sqlite_autoindex_seasons_1 (season_name=?) | SCAN p | SEARCH d USING INTEGER PRIMARY KEY (rowid=?)"
+   },
+   "agri_008": {
+    "ms": 29.427811999994447,
+    "cat": "agg",
+    "full_scan": true,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SCAN p | SEARCH d USING INTEGER PRIMARY KEY (rowid=?)"
+   },
+   "agri_009": {
+    "ms": 22.136541000008947,
+    "cat": "agg",
+    "full_scan": true,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SCAN p | SEARCH d USING INTEGER PRIMARY KEY (rowid=?)"
+   },
+   "agri_010": {
+    "ms": 23.164301999941017,
+    "cat": "agg",
+    "full_scan": true,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SCAN p | SEARCH d USING INTEGER PRIMARY KEY (rowid=?)"
+   },
+   "agri_011": {
+    "ms": 0.05973799989078543,
+    "cat": "count",
+    "full_scan": false,
+    "plan": "SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SCAN d"
+   },
+   "agri_012": {
+    "ms": 0.02023199999712233,
+    "cat": "count",
+    "full_scan": false,
+    "plan": "SEARCH cc USING COVERING INDEX sqlite_autoindex_crop_categories_1 (category_name=?) | SCAN c"
+   },
+   "agri_013": {
+    "ms": 0.0074950000907847425,
+    "cat": "count",
+    "full_scan": false,
+    "plan": "SCAN states"
+   },
+   "agri_014": {
+    "ms": 0.05594200001723948,
+    "cat": "count",
+    "full_scan": false,
+    "plan": "SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SCAN d"
+   },
+   "agri_015": {
+    "ms": 21.950377000166554,
+    "cat": "group",
+    "full_scan": true,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SCAN p | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | SEARCH s USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY"
+   },
+   "agri_016": {
+    "ms": 32.447349999984,
+    "cat": "group",
+    "full_scan": true,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SCAN p | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | SEARCH se USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY"
+   },
+   "agri_017": {
+    "ms": 37.59804599985728,
+    "cat": "group",
+    "full_scan": true,
+    "plan": "SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SCAN p | SEARCH c USING INTEGER PRIMARY KEY (rowid=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | SEARCH cc USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY"
+   },
+   "agri_018": {
+    "ms": 27.850067000144918,
+    "cat": "group",
+    "full_scan": true,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SCAN p | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY"
+   },
+   "agri_019": {
+    "ms": 21.37016599999697,
+    "cat": "group",
+    "full_scan": true,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SCAN p | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY"
+   },
+   "agri_020": {
+    "ms": 23.03099799996744,
+    "cat": "group",
+    "full_scan": true,
+    "plan": "SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SCAN p | SEARCH c USING INTEGER PRIMARY KEY (rowid=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY"
+   },
+   "agri_021": {
+    "ms": 38.331771000002846,
+    "cat": "group",
+    "full_scan": true,
+    "plan": "SEARCH cc USING COVERING INDEX sqlite_autoindex_crop_categories_1 (category_name=?) | SCAN p | SEARCH c USING INTEGER PRIMARY KEY (rowid=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | SEARCH s USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY"
+   },
+   "agri_022": {
+    "ms": 24.767572999962795,
+    "cat": "group",
+    "full_scan": true,
+    "plan": "SCAN p | SEARCH se USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY"
+   },
+   "agri_023": {
+    "ms": 0.04191000016362523,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SCAN cc USING COVERING INDEX sqlite_autoindex_crop_categories_1 | SCAN c"
+   },
+   "agri_024": {
+    "ms": 0.2017130000240286,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SCAN d | SEARCH s USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY"
+   },
+   "agri_025": {
+    "ms": 26.60318399989592,
+    "cat": "group",
+    "full_scan": true,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SCAN p | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY"
+   },
+   "agri_026": {
+    "ms": 22.07824399988567,
+    "cat": "group",
+    "full_scan": true,
+    "plan": "SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH cc USING COVERING INDEX sqlite_autoindex_crop_categories_1 (category_name=?) | SCAN p | SEARCH c USING INTEGER PRIMARY KEY (rowid=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY"
+   },
+   "agri_027": {
+    "ms": 22.326602000021012,
+    "cat": "group",
+    "full_scan": true,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SCAN p | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | SEARCH s USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY"
+   },
+   "agri_028": {
+    "ms": 21.625023000069632,
+    "cat": "group",
+    "full_scan": true,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SCAN p | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY"
+   },
+   "agri_029": {
+    "ms": 21.841745000074297,
+    "cat": "group",
+    "full_scan": true,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SCAN p | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | SEARCH se USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY"
+   },
+   "agri_030": {
+    "ms": 37.83788700002333,
+    "cat": "group",
+    "full_scan": true,
+    "plan": "SCAN p | SEARCH c USING INTEGER PRIMARY KEY (rowid=?) | SEARCH cc USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY"
+   },
+   "agri_031": {
+    "ms": 22.493907999887597,
+    "cat": "group",
+    "full_scan": true,
+    "plan": "SEARCH cc USING COVERING INDEX sqlite_autoindex_crop_categories_1 (category_name=?) | SCAN p | SEARCH c USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY"
+   },
+   "agri_032": {
+    "ms": 25.192672000002858,
+    "cat": "topk",
+    "full_scan": true,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SCAN p | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | SEARCH s USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY | USE TEMP B-TREE FOR ORDER BY"
+   },
+   "agri_033": {
+    "ms": 22.78441499993278,
+    "cat": "topk",
+    "full_scan": true,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SCAN p | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY | USE TEMP B-TREE FOR ORDER BY"
+   },
+   "agri_034": {
+    "ms": 25.00904800012904,
+    "cat": "topk",
+    "full_scan": true,
+    "plan": "SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SCAN p | SEARCH c USING INTEGER PRIMARY KEY (rowid=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY | USE TEMP B-TREE FOR ORDER BY"
+   },
+   "agri_035": {
+    "ms": 43.22790099990925,
+    "cat": "topk",
+    "full_scan": true,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SCAN p | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY | USE TEMP B-TREE FOR ORDER BY"
+   },
+   "agri_036": {
+    "ms": 22.27791000018442,
+    "cat": "topk",
+    "full_scan": true,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SCAN p | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY | USE TEMP B-TREE FOR ORDER BY"
+   },
+   "agri_037": {
+    "ms": 24.11328399989543,
+    "cat": "topk",
+    "full_scan": true,
+    "plan": "SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SCAN p | SEARCH c USING INTEGER PRIMARY KEY (rowid=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | SEARCH cc USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY | USE TEMP B-TREE FOR ORDER BY"
+   },
+   "agri_038": {
+    "ms": 29.789521000111563,
+    "cat": "topk",
+    "full_scan": true,
+    "plan": "SCAN p | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | SEARCH s USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY | USE TEMP B-TREE FOR ORDER BY"
+   },
+   "agri_039": {
+    "ms": 25.697620999835635,
+    "cat": "topk",
+    "full_scan": true,
+    "plan": "SCAN p | SEARCH se USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY | USE TEMP B-TREE FOR ORDER BY"
+   },
+   "agri_040": {
+    "ms": 36.76199100004851,
+    "cat": "topk",
+    "full_scan": true,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SCAN p | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | SEARCH s USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY | USE TEMP B-TREE FOR ORDER BY"
+   }
+  },
+  "full_scans": 33,
+  "size_mb": 10.530816,
+  "total_ms": 893.5343409998495,
+  "median_ms": 22.616067499939163
+ },
+ "current": {
+  "per": {
+   "agri_001": {
+    "ms": 4.737412000167751,
+    "cat": "agg",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop (crop_id=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?)"
+   },
+   "agri_002": {
+    "ms": 2.3323130001244863,
+    "cat": "agg",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop (crop_id=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?)"
+   },
+   "agri_003": {
+    "ms": 1.3749459999417013,
+    "cat": "agg",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop (crop_id=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?)"
+   },
+   "agri_004": {
+    "ms": 1.634797999940929,
+    "cat": "agg",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop (crop_id=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?)"
+   },
+   "agri_005": {
+    "ms": 2.503265000086685,
+    "cat": "agg",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop (crop_id=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?)"
+   },
+   "agri_006": {
+    "ms": 0.7483880001473153,
+    "cat": "agg",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop (crop_id=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?)"
+   },
+   "agri_007": {
+    "ms": 1.423344999921028,
+    "cat": "agg",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH se USING COVERING INDEX sqlite_autoindex_seasons_1 (season_name=?) | SEARCH p USING INDEX idx_prod_crop (crop_id=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?)"
+   },
+   "agri_008": {
+    "ms": 1.3121960000717081,
+    "cat": "agg",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop (crop_id=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?)"
+   },
+   "agri_009": {
+    "ms": 1.8164789998991182,
+    "cat": "agg",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop (crop_id=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?)"
+   },
+   "agri_010": {
+    "ms": 3.028170999868962,
+    "cat": "agg",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop (crop_id=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?)"
+   },
+   "agri_011": {
+    "ms": 0.05772700001216435,
+    "cat": "count",
+    "full_scan": false,
+    "plan": "SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SCAN d"
+   },
+   "agri_012": {
+    "ms": 0.011432000064814929,
+    "cat": "count",
+    "full_scan": false,
+    "plan": "SEARCH cc USING COVERING INDEX sqlite_autoindex_crop_categories_1 (category_name=?) | SCAN c"
+   },
+   "agri_013": {
+    "ms": 0.007052000000840053,
+    "cat": "count",
+    "full_scan": false,
+    "plan": "SCAN states"
+   },
+   "agri_014": {
+    "ms": 0.05842800010213978,
+    "cat": "count",
+    "full_scan": false,
+    "plan": "SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SCAN d"
+   },
+   "agri_015": {
+    "ms": 4.466551999939838,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH p USING INDEX idx_prod_crop (crop_id=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | SEARCH s USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY"
+   },
+   "agri_016": {
+    "ms": 3.000390999886804,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop (crop_id=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | SEARCH se USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY"
+   },
+   "agri_017": {
+    "ms": 12.366954000071928,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_year (year=?) | SEARCH c USING INTEGER PRIMARY KEY (rowid=?) | SEARCH cc USING INTEGER PRIMARY KEY (rowid=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY"
+   },
+   "agri_018": {
+    "ms": 2.099458999964554,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop (crop_id=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY"
+   },
+   "agri_019": {
+    "ms": 2.7852799998981936,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop (crop_id=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY"
+   },
+   "agri_020": {
+    "ms": 10.516085000062958,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_year (year=?) | SEARCH c USING INTEGER PRIMARY KEY (rowid=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY"
+   },
+   "agri_021": {
+    "ms": 11.37938299984853,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SEARCH cc USING COVERING INDEX sqlite_autoindex_crop_categories_1 (category_name=?) | SEARCH p USING INDEX idx_prod_year (year=?) | SEARCH c USING INTEGER PRIMARY KEY (rowid=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | SEARCH s USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY"
+   },
+   "agri_022": {
+    "ms": 56.123941999885574,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SCAN se USING COVERING INDEX sqlite_autoindex_seasons_1 | SEARCH p USING INDEX idx_prod_year (year=?)"
+   },
+   "agri_023": {
+    "ms": 0.04216499996800849,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SCAN cc USING COVERING INDEX sqlite_autoindex_crop_categories_1 | SCAN c"
+   },
+   "agri_024": {
+    "ms": 0.20288500013521116,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SCAN d | SEARCH s USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY"
+   },
+   "agri_025": {
+    "ms": 59.73531099994034,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_year (year>? AND year<?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?)"
+   },
+   "agri_026": {
+    "ms": 15.219039999919914,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH cc USING COVERING INDEX sqlite_autoindex_crop_categories_1 (category_name=?) | SEARCH p USING INDEX idx_prod_year (year=?) | SEARCH c USING INTEGER PRIMARY KEY (rowid=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY"
+   },
+   "agri_027": {
+    "ms": 1.8312810000225,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH p USING INDEX idx_prod_crop (crop_id=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | SEARCH s USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY"
+   },
+   "agri_028": {
+    "ms": 0.25505000007797207,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop (crop_id=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY"
+   },
+   "agri_029": {
+    "ms": 3.130388000045059,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop (crop_id=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | SEARCH se USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY"
+   },
+   "agri_030": {
+    "ms": 18.191261000083614,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SEARCH p USING INDEX idx_prod_year (year=?) | SEARCH c USING INTEGER PRIMARY KEY (rowid=?) | SEARCH cc USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY"
+   },
+   "agri_031": {
+    "ms": 9.784502999991673,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SEARCH cc USING COVERING INDEX sqlite_autoindex_crop_categories_1 (category_name=?) | SEARCH p USING INDEX idx_prod_year (year=?) | SEARCH c USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY"
+   },
+   "agri_032": {
+    "ms": 1.5597689998685382,
+    "cat": "topk",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH p USING INDEX idx_prod_crop (crop_id=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | SEARCH s USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY | USE TEMP B-TREE FOR ORDER BY"
+   },
+   "agri_033": {
+    "ms": 1.4220729999578907,
+    "cat": "topk",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop (crop_id=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY | USE TEMP B-TREE FOR ORDER BY"
+   },
+   "agri_034": {
+    "ms": 11.12480200004029,
+    "cat": "topk",
+    "full_scan": false,
+    "plan": "SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_year (year=?) | SEARCH c USING INTEGER PRIMARY KEY (rowid=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY | USE TEMP B-TREE FOR ORDER BY"
+   },
+   "agri_035": {
+    "ms": 4.374951999807308,
+    "cat": "topk",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop (crop_id=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY | USE TEMP B-TREE FOR ORDER BY"
+   },
+   "agri_036": {
+    "ms": 2.7033819999360276,
+    "cat": "topk",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop (crop_id=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY | USE TEMP B-TREE FOR ORDER BY"
+   },
+   "agri_037": {
+    "ms": 11.969600000156788,
+    "cat": "topk",
+    "full_scan": false,
+    "plan": "SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_year (year=?) | SEARCH c USING INTEGER PRIMARY KEY (rowid=?) | SEARCH cc USING INTEGER PRIMARY KEY (rowid=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY | USE TEMP B-TREE FOR ORDER BY"
+   },
+   "agri_038": {
+    "ms": 14.715769000076762,
+    "cat": "topk",
+    "full_scan": false,
+    "plan": "SEARCH p USING INDEX idx_prod_year (year=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | SEARCH s USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY | USE TEMP B-TREE FOR ORDER BY"
+   },
+   "agri_039": {
+    "ms": 60.67793200008964,
+    "cat": "topk",
+    "full_scan": false,
+    "plan": "SCAN se USING COVERING INDEX sqlite_autoindex_seasons_1 | SEARCH p USING INDEX idx_prod_year (year=?) | USE TEMP B-TREE FOR ORDER BY"
+   },
+   "agri_040": {
+    "ms": 0.871666999955778,
+    "cat": "topk",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH p USING INDEX idx_prod_crop (crop_id=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | SEARCH s USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY | USE TEMP B-TREE FOR ORDER BY"
+   }
+  },
+  "full_scans": 0,
+  "size_mb": 20.881408,
+  "total_ms": 341.59582799998134,
+  "median_ms": 2.6033235000113564
+ },
+ "composite": {
+  "per": {
+   "agri_001": {
+    "ms": 0.6094380000831734,
+    "cat": "agg",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?)"
+   },
+   "agri_002": {
+    "ms": 0.38855999991938006,
+    "cat": "agg",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?)"
+   },
+   "agri_003": {
+    "ms": 0.358547000132603,
+    "cat": "agg",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?)"
+   },
+   "agri_004": {
+    "ms": 0.3453140000146959,
+    "cat": "agg",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?)"
+   },
+   "agri_005": {
+    "ms": 0.5559020000873716,
+    "cat": "agg",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?)"
+   },
+   "agri_006": {
+    "ms": 0.13135599988345348,
+    "cat": "agg",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?)"
+   },
+   "agri_007": {
+    "ms": 0.4192970000076457,
+    "cat": "agg",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH se USING COVERING INDEX sqlite_autoindex_seasons_1 (season_name=?) | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?)"
+   },
+   "agri_008": {
+    "ms": 0.4218349999973725,
+    "cat": "agg",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?)"
+   },
+   "agri_009": {
+    "ms": 0.3974999999627471,
+    "cat": "agg",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?)"
+   },
+   "agri_010": {
+    "ms": 0.743800000009287,
+    "cat": "agg",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?)"
+   },
+   "agri_011": {
+    "ms": 0.11174999985996692,
+    "cat": "count",
+    "full_scan": false,
+    "plan": "SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SCAN d"
+   },
+   "agri_012": {
+    "ms": 0.01986600000236649,
+    "cat": "count",
+    "full_scan": false,
+    "plan": "SEARCH cc USING COVERING INDEX sqlite_autoindex_crop_categories_1 (category_name=?) | SCAN c"
+   },
+   "agri_013": {
+    "ms": 0.011364999863872072,
+    "cat": "count",
+    "full_scan": false,
+    "plan": "SCAN states"
+   },
+   "agri_014": {
+    "ms": 0.10617499992804369,
+    "cat": "count",
+    "full_scan": false,
+    "plan": "SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SCAN d"
+   },
+   "agri_015": {
+    "ms": 1.20024500006366,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | SEARCH s USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY"
+   },
+   "agri_016": {
+    "ms": 0.6321819998902356,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | SEARCH se USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY"
+   },
+   "agri_017": {
+    "ms": 17.256978999967032,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SCAN c | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | SEARCH cc USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY"
+   },
+   "agri_018": {
+    "ms": 2.422007999939524,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year>?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?)"
+   },
+   "agri_019": {
+    "ms": 0.5004109998480999,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY"
+   },
+   "agri_020": {
+    "ms": 14.364704999934474,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SCAN c USING COVERING INDEX sqlite_autoindex_crops_1 | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?)"
+   },
+   "agri_021": {
+    "ms": 6.11942899990936,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SCAN c | BLOOM FILTER ON cc (category_id=?) | SEARCH cc USING INTEGER PRIMARY KEY (rowid=?) | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | SEARCH s USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY"
+   },
+   "agri_022": {
+    "ms": 56.69595399990612,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SCAN se USING COVERING INDEX sqlite_autoindex_seasons_1 | SEARCH p USING INDEX idx_prod_year (year=?)"
+   },
+   "agri_023": {
+    "ms": 0.08008999998310173,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SCAN cc USING COVERING INDEX sqlite_autoindex_crop_categories_1 | SCAN c"
+   },
+   "agri_024": {
+    "ms": 0.4774440001256153,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SCAN d | SEARCH s USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY"
+   },
+   "agri_025": {
+    "ms": 3.292904000090857,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year>? AND year<?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?)"
+   },
+   "agri_026": {
+    "ms": 3.4986580001259426,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH cc USING COVERING INDEX sqlite_autoindex_crop_categories_1 (category_name=?) | SCAN c USING INDEX sqlite_autoindex_crops_1 | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?)"
+   },
+   "agri_027": {
+    "ms": 0.6781550000596326,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | SEARCH s USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY"
+   },
+   "agri_028": {
+    "ms": 0.12411600005179935,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY"
+   },
+   "agri_029": {
+    "ms": 0.6719040000007226,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | SEARCH se USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY"
+   },
+   "agri_030": {
+    "ms": 16.46118500002558,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SCAN cc USING COVERING INDEX sqlite_autoindex_crop_categories_1 | SCAN c | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year=?)"
+   },
+   "agri_031": {
+    "ms": 0.37744199994449446,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SEARCH cc USING COVERING INDEX sqlite_autoindex_crop_categories_1 (category_name=?) | SCAN c USING INDEX sqlite_autoindex_crops_1 | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year=?)"
+   },
+   "agri_032": {
+    "ms": 0.6480950000877783,
+    "cat": "topk",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | SEARCH s USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY | USE TEMP B-TREE FOR ORDER BY"
+   },
+   "agri_033": {
+    "ms": 0.43546100005187327,
+    "cat": "topk",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY | USE TEMP B-TREE FOR ORDER BY"
+   },
+   "agri_034": {
+    "ms": 11.402219000046898,
+    "cat": "topk",
+    "full_scan": false,
+    "plan": "SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SCAN c USING COVERING INDEX sqlite_autoindex_crops_1 | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR ORDER BY"
+   },
+   "agri_035": {
+    "ms": 7.930205000093338,
+    "cat": "topk",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop_year (crop_id=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR ORDER BY"
+   },
+   "agri_036": {
+    "ms": 0.39365099996757635,
+    "cat": "topk",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY | USE TEMP B-TREE FOR ORDER BY"
+   },
+   "agri_037": {
+    "ms": 11.208605999854626,
+    "cat": "topk",
+    "full_scan": false,
+    "plan": "SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SCAN c | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | SEARCH cc USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY | USE TEMP B-TREE FOR ORDER BY"
+   },
+   "agri_038": {
+    "ms": 14.979999000161115,
+    "cat": "topk",
+    "full_scan": false,
+    "plan": "SEARCH p USING INDEX idx_prod_year (year=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | SEARCH s USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY | USE TEMP B-TREE FOR ORDER BY"
+   },
+   "agri_039": {
+    "ms": 57.02318999988165,
+    "cat": "topk",
+    "full_scan": false,
+    "plan": "SCAN se USING COVERING INDEX sqlite_autoindex_seasons_1 | SEARCH p USING INDEX idx_prod_year (year=?) | USE TEMP B-TREE FOR ORDER BY"
+   },
+   "agri_040": {
+    "ms": 0.2243880001060461,
+    "cat": "topk",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | SEARCH s USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY | USE TEMP B-TREE FOR ORDER BY"
+   }
+  },
+  "full_scans": 0,
+  "size_mb": 25.112576,
+  "total_ms": 233.72032999986914,
+  "median_ms": 0.5826700000852725
+ },
+ "final": {
+  "per": {
+   "agri_001": {
+    "ms": 0.6834129999333527,
+    "cat": "agg",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?)"
+   },
+   "agri_002": {
+    "ms": 0.4497680001804838,
+    "cat": "agg",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?)"
+   },
+   "agri_003": {
+    "ms": 0.4578609998588945,
+    "cat": "agg",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?)"
+   },
+   "agri_004": {
+    "ms": 0.47499299989794963,
+    "cat": "agg",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?)"
+   },
+   "agri_005": {
+    "ms": 0.65630299991426,
+    "cat": "agg",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?)"
+   },
+   "agri_006": {
+    "ms": 0.25175299992952205,
+    "cat": "agg",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?)"
+   },
+   "agri_007": {
+    "ms": 0.5340510001587973,
+    "cat": "agg",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH se USING COVERING INDEX sqlite_autoindex_seasons_1 (season_name=?) | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?)"
+   },
+   "agri_008": {
+    "ms": 0.42822299997169466,
+    "cat": "agg",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?)"
+   },
+   "agri_009": {
+    "ms": 0.4280450000351266,
+    "cat": "agg",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?)"
+   },
+   "agri_010": {
+    "ms": 0.741693000009036,
+    "cat": "agg",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?)"
+   },
+   "agri_011": {
+    "ms": 0.11319700001877209,
+    "cat": "count",
+    "full_scan": false,
+    "plan": "SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SCAN d"
+   },
+   "agri_012": {
+    "ms": 0.022037999997337465,
+    "cat": "count",
+    "full_scan": false,
+    "plan": "SEARCH cc USING COVERING INDEX sqlite_autoindex_crop_categories_1 (category_name=?) | SCAN c"
+   },
+   "agri_013": {
+    "ms": 0.012000000197076588,
+    "cat": "count",
+    "full_scan": false,
+    "plan": "SCAN states"
+   },
+   "agri_014": {
+    "ms": 0.11328200002935773,
+    "cat": "count",
+    "full_scan": false,
+    "plan": "SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SCAN d"
+   },
+   "agri_015": {
+    "ms": 1.2143510000441893,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | SEARCH s USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY"
+   },
+   "agri_016": {
+    "ms": 0.7419319999826257,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | SEARCH se USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY"
+   },
+   "agri_017": {
+    "ms": 6.117495000125928,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SCAN c | BLOOM FILTER ON d (state_id=?) | SEARCH d USING AUTOMATIC COVERING INDEX (state_id=?) | SEARCH p USING INDEX uq_prod_key (district_id=? AND crop_id=?) | SEARCH cc USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY"
+   },
+   "agri_018": {
+    "ms": 2.2892429999501474,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year>?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?)"
+   },
+   "agri_019": {
+    "ms": 0.43774000005214475,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY"
+   },
+   "agri_020": {
+    "ms": 1.1874740000621387,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SCAN c USING COVERING INDEX sqlite_autoindex_crops_1 | BLOOM FILTER ON d (state_id=?) | SEARCH d USING AUTOMATIC COVERING INDEX (state_id=?) | SEARCH p USING INDEX uq_prod_key (district_id=? AND crop_id=?)"
+   },
+   "agri_021": {
+    "ms": 4.259412000010343,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SCAN c | BLOOM FILTER ON cc (category_id=?) | SEARCH cc USING INTEGER PRIMARY KEY (rowid=?) | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | SEARCH s USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY"
+   },
+   "agri_022": {
+    "ms": 85.94262300016453,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SCAN se USING COVERING INDEX sqlite_autoindex_seasons_1 | SEARCH p USING INDEX idx_prod_year (year=?)"
+   },
+   "agri_023": {
+    "ms": 0.0422590001107892,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SCAN cc USING COVERING INDEX sqlite_autoindex_crop_categories_1 | SCAN c"
+   },
+   "agri_024": {
+    "ms": 0.20217099995534227,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SCAN d | SEARCH s USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY"
+   },
+   "agri_025": {
+    "ms": 2.1211860000676097,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year>? AND year<?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?)"
+   },
+   "agri_026": {
+    "ms": 1.0657090001586766,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SCAN c USING INDEX sqlite_autoindex_crops_1 | BLOOM FILTER ON d (state_id=?) | SEARCH d USING AUTOMATIC COVERING INDEX (state_id=?) | BLOOM FILTER ON cc (category_id=?) | SEARCH cc USING INTEGER PRIMARY KEY (rowid=?) | SEARCH p USING INDEX uq_prod_key (district_id=? AND crop_id=?)"
+   },
+   "agri_027": {
+    "ms": 0.3853260000141745,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | SEARCH s USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY"
+   },
+   "agri_028": {
+    "ms": 0.06062099987502734,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY"
+   },
+   "agri_029": {
+    "ms": 0.4297989999031415,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | SEARCH se USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY"
+   },
+   "agri_030": {
+    "ms": 11.430764000124327,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SCAN cc USING COVERING INDEX sqlite_autoindex_crop_categories_1 | SCAN c | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year=?)"
+   },
+   "agri_031": {
+    "ms": 0.23162200000115263,
+    "cat": "group",
+    "full_scan": false,
+    "plan": "SEARCH cc USING COVERING INDEX sqlite_autoindex_crop_categories_1 (category_name=?) | SCAN c USING INDEX sqlite_autoindex_crops_1 | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year=?)"
+   },
+   "agri_032": {
+    "ms": 0.3921360000731511,
+    "cat": "topk",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | SEARCH s USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY | USE TEMP B-TREE FOR ORDER BY"
+   },
+   "agri_033": {
+    "ms": 0.3968779999468097,
+    "cat": "topk",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY | USE TEMP B-TREE FOR ORDER BY"
+   },
+   "agri_034": {
+    "ms": 3.5649760000069364,
+    "cat": "topk",
+    "full_scan": false,
+    "plan": "SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SCAN c USING COVERING INDEX sqlite_autoindex_crops_1 | BLOOM FILTER ON d (state_id=?) | SEARCH d USING AUTOMATIC COVERING INDEX (state_id=?) | SEARCH p USING INDEX uq_prod_key (district_id=? AND crop_id=?) | USE TEMP B-TREE FOR ORDER BY"
+   },
+   "agri_035": {
+    "ms": 8.606016000157979,
+    "cat": "topk",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop_year (crop_id=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR ORDER BY"
+   },
+   "agri_036": {
+    "ms": 0.4134270000122342,
+    "cat": "topk",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY | USE TEMP B-TREE FOR ORDER BY"
+   },
+   "agri_037": {
+    "ms": 4.61451199998919,
+    "cat": "topk",
+    "full_scan": false,
+    "plan": "SEARCH s USING COVERING INDEX sqlite_autoindex_states_1 (state_name=?) | SCAN c | BLOOM FILTER ON d (state_id=?) | SEARCH d USING AUTOMATIC COVERING INDEX (state_id=?) | SEARCH p USING INDEX uq_prod_key (district_id=? AND crop_id=?) | SEARCH cc USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY | USE TEMP B-TREE FOR ORDER BY"
+   },
+   "agri_038": {
+    "ms": 25.921162000031472,
+    "cat": "topk",
+    "full_scan": false,
+    "plan": "SCAN s USING COVERING INDEX sqlite_autoindex_states_1 | BLOOM FILTER ON d (state_id=?) | SEARCH d USING AUTOMATIC COVERING INDEX (state_id=?) | SEARCH p USING COVERING INDEX uq_prod_key (district_id=?) | USE TEMP B-TREE FOR ORDER BY"
+   },
+   "agri_039": {
+    "ms": 57.63399300008132,
+    "cat": "topk",
+    "full_scan": false,
+    "plan": "SCAN se USING COVERING INDEX sqlite_autoindex_seasons_1 | SEARCH p USING INDEX idx_prod_year (year=?) | USE TEMP B-TREE FOR ORDER BY"
+   },
+   "agri_040": {
+    "ms": 0.22680200004288054,
+    "cat": "topk",
+    "full_scan": false,
+    "plan": "SEARCH c USING COVERING INDEX sqlite_autoindex_crops_1 (crop_name=?) | SEARCH p USING INDEX idx_prod_crop_year (crop_id=? AND year=?) | SEARCH d USING INTEGER PRIMARY KEY (rowid=?) | SEARCH s USING INTEGER PRIMARY KEY (rowid=?) | USE TEMP B-TREE FOR GROUP BY | USE TEMP B-TREE FOR ORDER BY"
+   }
+  },
+  "full_scans": 0,
+  "size_mb": 30.920704,
+  "total_ms": 225.29624900107592,
+  "median_ms": 0.46642699987842207
+ }
+}
